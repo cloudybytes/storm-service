@@ -31,47 +31,7 @@ public class MoviesSpout extends BaseRichSpout {
 
     @Override
     public void nextTuple() {
-        // String temp;
         if(sc.hasNext()) {
-            // temp = sc.next();
-            // // System.out.println("Temp = " + temp);
-            // if(!temp.isEmpty()) {
-            //     int movieId = Integer.parseInt(temp);
-            //     String title = "";
-            //     sc.useDelimiter("");
-            //     char ch = sc.next().charAt(0);
-            //     do {
-            //         ch = sc.next().charAt(0);
-            //         title = title + ch;
-            //     } while(ch != '"');
-            //     title = title.substring(0, title.length() - 1);
-            //     // ch = sc.next().charAt(0);
-            //     sc.useDelimiter(",|\\r\\n");
-            //     // title = title.substring(1, title.length() - 1);
-            //     String releaseDate = sc.next();
-            //     releaseDate = releaseDate.substring(1, releaseDate.length() - 1);
-            //     int unknown = Integer.parseInt(sc.next());
-            //     int action = Integer.parseInt(sc.next());
-            //     int adventure = Integer.parseInt(sc.next());
-            //     int animation = Integer.parseInt(sc.next());
-            //     int children = Integer.parseInt(sc.next());
-            //     int comedy = Integer.parseInt(sc.next());
-            //     int crime = Integer.parseInt(sc.next());
-            //     int documentary = Integer.parseInt(sc.next());
-            //     int drama = Integer.parseInt(sc.next());
-            //     int fantasy = Integer.parseInt(sc.next());
-            //     int filmNoir = Integer.parseInt(sc.next());
-            //     int horror = Integer.parseInt(sc.next());
-            //     int musical = Integer.parseInt(sc.next());
-            //     int mystery = Integer.parseInt(sc.next());
-            //     int romance = Integer.parseInt(sc.next());
-            //     int sciFi = Integer.parseInt(sc.next());
-            //     int thriller = Integer.parseInt(sc.next());
-            //     int war = Integer.parseInt(sc.next());
-            //     int western = Integer.parseInt(sc.next());
-            //     spoutOutputCollector.emit(new Values(movieId, title, releaseDate, unknown, action, adventure, animation, children, comedy, crime, documentary, drama, fantasy, filmNoir, horror, musical, mystery, romance, sciFi, thriller, war, western));
-            // }
-
             String temp = sc.nextLine();
             int index = temp.indexOf(',');
             int movieId = Integer.parseInt(temp.substring(0, index));
