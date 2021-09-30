@@ -2,7 +2,6 @@ package com.example.storm.spouts;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Scanner;
 

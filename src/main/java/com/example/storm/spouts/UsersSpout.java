@@ -44,6 +44,7 @@ public class UsersSpout extends BaseRichSpout {
                 String zipcode = sc.next();
                 int zip = Integer.parseInt(zipcode.substring(1, zipcode.length() - 1));
                 spoutOutputCollector.emit(new Values(userId, age, gender, occupation, zip));
+                // System.out.println("Value emitted");
             }
         }
     }
