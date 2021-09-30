@@ -2,12 +2,14 @@ package com.example.storm;
 
 import java.util.concurrent.TimeUnit;
 
+import com.example.storm.bolts.SelectBolt;
 import com.example.storm.bolts.TestBolt;
 import com.example.storm.spouts.MoviesSpout;
 import com.example.storm.spouts.RatingSpout;
 import com.example.storm.spouts.UsersSpout;
 import com.example.storm.spouts.ZipcodesSpout;
 import com.example.storm.utils.SpoutUtils;
+import com.example.storm.utils.TopologyUtils;
 
 import org.apache.storm.Config;
 import org.apache.storm.LocalCluster;
@@ -25,10 +27,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class ServiceController {
-
     @PostMapping(value = "/execute", consumes = "application/json")
     public String execute(@RequestBody ParsedSqlQuery parsedSqlQuery) throws Exception {
         Boolean joinPresent = false;
+        String columns[];
         TopologyBuilder builder = new TopologyBuilder();
         builder.setSpout("MoviesSpout", new MoviesSpout());
         builder.setSpout("UsersSpout", new UsersSpout());
@@ -36,23 +38,15 @@ public class ServiceController {
         builder.setSpout("ZipcodesSpout", new ZipcodesSpout());
         if(parsedSqlQuery.getJoin() != null) {
             joinPresent = true;
-            JoinBolt joinBolt;
-            if(parsedSqlQuery.getJoin()[0].equals("inner")) {
-                joinBolt = new JoinBolt(SpoutUtils.getSpoutName(parsedSqlQuery.getJoin()[1]), parsedSqlQuery.getJoin()[2])
-                    .join(SpoutUtils.getSpoutName(parsedSqlQuery.getJoin()[3]), parsedSqlQuery.getJoin()[4], SpoutUtils.getSpoutName(parsedSqlQuery.getJoin()[1]))
-                    .select(SpoutUtils.getCommaSperatedFields(parsedSqlQuery.getJoin()[1]) + ", " + SpoutUtils.getCommaSperatedFields(parsedSqlQuery.getJoin()[3]))
-                    .withTumblingWindow(new BaseWindowedBolt.Duration(10, TimeUnit.SECONDS));
-            } else {
-                joinBolt = new JoinBolt(SpoutUtils.getSpoutName(parsedSqlQuery.getJoin()[1]), parsedSqlQuery.getJoin()[2])
-                    .leftJoin(SpoutUtils.getSpoutName(parsedSqlQuery.getJoin()[3]), parsedSqlQuery.getJoin()[4], SpoutUtils.getSpoutName(parsedSqlQuery.getJoin()[1]))
-                    .select(SpoutUtils.getCommaSperatedFields(parsedSqlQuery.getJoin()[1]) + ", " + SpoutUtils.getCommaSperatedFields(parsedSqlQuery.getJoin()[3]))
-                    .withTumblingWindow(new BaseWindowedBolt.Duration(10, TimeUnit.SECONDS));
-            }
-            builder.setBolt("JoinerBolt", joinBolt)
-                .fieldsGrouping(SpoutUtils.getSpoutName(parsedSqlQuery.getJoin()[1]), new Fields(parsedSqlQuery.getJoin()[2]))
-                .fieldsGrouping(SpoutUtils.getSpoutName(parsedSqlQuery.getJoin()[3]), new Fields(parsedSqlQuery.getJoin()[4]));
+            String commaColumns = TopologyUtils.addJoinerBoltToTopology(builder, parsedSqlQuery);
+            columns = commaColumns.split(",");
+        } else {
+            columns = SpoutUtils.getCommaSperatedFields(parsedSqlQuery.getFrom_table()).split(",");
         }
-        builder.setBolt("TestBolt", new TestBolt()).shuffleGrouping(joinPresent ? "JoinerBolt" : SpoutUtils.getSpoutName(parsedSqlQuery.getFrom_table()));
+        SelectBolt selectBolt = new SelectBolt();
+        selectBolt.setOutputFields(parsedSqlQuery.getSelect_columns());
+        builder.setBolt("SelectBolt", selectBolt).shuffleGrouping(joinPresent ? "JoinerBolt" : SpoutUtils.getSpoutName(parsedSqlQuery.getFrom_table()));
+        builder.setBolt("TestBolt", new TestBolt()).shuffleGrouping("SelectBolt");
         Config config = new Config();
         config.put("InputFolder", "../input/");
         config.setDebug(false);
