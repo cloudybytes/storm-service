@@ -18,8 +18,6 @@ public class RatingSpout extends BaseRichSpout {
 
     @Override
     public void open(Map<String, Object> conf, TopologyContext context, SpoutOutputCollector collector) {
-        System.out.println("Config in Spout = " + conf.get("Key").toString());
-        conf.put("Key", "Value1");
         this.spoutOutputCollector = collector;
         String inputFolder = conf.get("InputFolder").toString();
         try {
@@ -50,5 +48,4 @@ public class RatingSpout extends BaseRichSpout {
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
         declarer.declare(new Fields("userid", "movieid", "rating", "timestamp"));
     }
-    
 }
