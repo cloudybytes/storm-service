@@ -18,9 +18,9 @@ public class SelectBolt extends BaseBasicBolt {
     
     public void setOutputFields(String[] fields) {
         this.fields = Arrays.copyOf(fields, fields.length);
-        for(int i = 0; i < fields.length; i++) {
-            System.out.println(fields[i]);
-        }
+        // for(int i = 0; i < fields.length; i++) {
+        //     System.out.println(fields[i]);
+        // }
     }
 
     @Override
@@ -32,7 +32,7 @@ public class SelectBolt extends BaseBasicBolt {
             } else {
                 inputFields.add(input.getFields().get(i));
             }
-            System.out.println("Inout Field in BOlt = " + inputFields.get(i));
+            // System.out.println("Inout Field in BOlt = " + inputFields.get(i));
         }
         Values output = new Values();
         for(int i = 0; i < this.fields.length; i++) {
@@ -44,7 +44,7 @@ public class SelectBolt extends BaseBasicBolt {
         }
         // System.out.println("Emitting = " + output.toString());
         collector.emit(output);
-        collector.emit(input.getValues());
+        // collector.emit(input.getValues());
     }
 
     @Override

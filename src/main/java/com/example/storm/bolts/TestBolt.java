@@ -14,13 +14,23 @@ public class TestBolt extends BaseBasicBolt {
     public void execute(Tuple input, BasicOutputCollector collector) {
         if(temp) {
             System.out.println("Tuple Received in testBolt = " + input.toString());
-            temp = !temp;
+            // temp = !temp;
         }
-        collector.emit(new Values(1));
+        Values output = new Values();
+        output.add(1);
+        String arr[] = new String[2];
+        arr[0] = "Hello";
+        arr[1] = "World";
+        output.add(arr);
+        try {
+            collector.emit(output);
+        } catch(Exception e) {
+            System.out.println(e);
+        }
     }
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields("field"));
+        declarer.declare(new Fields("field", "field1"));
     }    
 }
