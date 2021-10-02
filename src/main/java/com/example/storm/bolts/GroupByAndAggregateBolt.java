@@ -105,7 +105,7 @@ public class GroupByAndAggregateBolt extends BaseBasicBolt {
                 }
             }
         } else {
-            // System.out.println("Emitting Groupby irrelevent = " + input.toString());
+            System.out.println("Emitting Groupby irrelevent = " + input.toString());
             collector.emit(input.getValues());
         }
     }
