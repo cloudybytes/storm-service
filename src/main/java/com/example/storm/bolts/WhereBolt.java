@@ -3,6 +3,8 @@ package com.example.storm.bolts;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.BasicOutputCollector;
 import org.apache.storm.topology.OutputFieldsDeclarer;
@@ -25,6 +27,7 @@ public class WhereBolt extends BaseBasicBolt {
             }
             // System.out.println("Column Name = " + fields.get(i));
         }
+        fields = fields.stream().distinct().collect(Collectors.toList());
     }
 
     @Override

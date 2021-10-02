@@ -1,6 +1,7 @@
 package com.example.storm;
 
 import com.example.storm.bolts.GroupByAndAggregateBolt;
+import com.example.storm.bolts.HavingBolt;
 import com.example.storm.bolts.SelectBolt;
 import com.example.storm.bolts.TestBolt;
 import com.example.storm.bolts.WhereBolt;
@@ -28,7 +29,6 @@ public class ServiceController {
         String columns[];
         TopologyBuilder builder = new TopologyBuilder();
         Config config = new Config();
-        // config.setDebug(true);
         config.put("InputFolder", "../input/");
         if(parsedSqlQuery.getWhere() != null) {
             config.put("where[0]", parsedSqlQuery.getWhere()[0]);
@@ -41,6 +41,11 @@ public class ServiceController {
         if(parsedSqlQuery.getAggr_function() != null && parsedSqlQuery.getHaving_condition() != null) {
             config.put("aggregate", parsedSqlQuery.getAggr_function());
             config.put("aggregateColumn", parsedSqlQuery.getHaving_condition()[0]);
+        }
+        if(parsedSqlQuery.getHaving_condition() != null) {
+            config.put("having[0]", parsedSqlQuery.getAggr_function() + "(" + parsedSqlQuery.getHaving_condition()[0] + ")");
+            config.put("having[1]", parsedSqlQuery.getHaving_condition()[1]);
+            config.put("having[2]", parsedSqlQuery.getHaving_condition()[2]);
         }
         System.out.println(parsedSqlQuery.getGroup_by_column() == null ? "" : parsedSqlQuery.getGroup_by_column());
         System.out.println(parsedSqlQuery.getAggr_function() == null ? "" : parsedSqlQuery.getAggr_function());
@@ -75,11 +80,13 @@ public class ServiceController {
         } else {
             declarer.shuffleGrouping("WhereBolt");
         }
+        HavingBolt havingBolt = new HavingBolt();
+        havingBolt.setOutputFields(columns);
+        builder.setBolt("HavingBolt", havingBolt).shuffleGrouping("GroupByBolt");
         SelectBolt selectBolt = new SelectBolt();
         selectBolt.setOutputFields(parsedSqlQuery.getSelect_columns());
-        builder.setBolt("SelectBolt", selectBolt).shuffleGrouping("GroupByBolt");
+        builder.setBolt("SelectBolt", selectBolt).shuffleGrouping("HavingBolt");
         builder.setBolt("TestBolt", new TestBolt()).shuffleGrouping("SelectBolt");
-        
         LocalCluster cluster = new LocalCluster();
         try {
             cluster.submitTopology("Topo", config, builder.createTopology());
