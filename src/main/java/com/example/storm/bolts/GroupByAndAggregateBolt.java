@@ -16,8 +16,8 @@ import org.apache.storm.tuple.Values;
 public class GroupByAndAggregateBolt extends BaseBasicBolt {
     private String[] fields;
     HashMap<Object, ArrayList<Object>> hashMap = new HashMap<Object, ArrayList<Object>>();
-    HashMap<Integer, Integer> countMap = new HashMap<Integer, Integer>();
-    HashMap<Integer, Integer> sumMap = new HashMap<Integer, Integer>();
+    public HashMap<Integer, Integer> countMap = new HashMap<Integer, Integer>();
+    public HashMap<Integer, Integer> sumMap = new HashMap<Integer, Integer>();
     String groupByField = "";
     String aggregate = "";
     String aggregateColumn = "";
@@ -31,6 +31,7 @@ public class GroupByAndAggregateBolt extends BaseBasicBolt {
             aggregate = topoConf.get("aggregate").toString();
             aggregateColumn = topoConf.get("aggregateColumn").toString();
         }
+        System.out.println("Inside bolt group and aggregate " + groupByField + "----" + aggregate + "+++++" + aggregateColumn);
     }
 
     public void setOutputFields(String []inputFields) {
@@ -66,7 +67,7 @@ public class GroupByAndAggregateBolt extends BaseBasicBolt {
                             int count = countMap.get(input.getIntegerByField(groupByField));
                             count++;
                             int sum = sumMap.get(input.getIntegerByField(groupByField)) + input.getIntegerByField(aggregateColumn);
-                            double avg = (double) sum / (double) count;
+                            double avg = ((double) sum) / (double) count;
                             tuple.set(tuple.size() - 1, avg);
                             countMap.put(input.getIntegerByField(groupByField), count);
                             sumMap.put(input.getIntegerByField(groupByField), sum);                            
@@ -89,7 +90,7 @@ public class GroupByAndAggregateBolt extends BaseBasicBolt {
                             // System.out.println("New tuple fields = " + hashMap.get(input.getValueByField(groupByField)).toString());
                         }
                         if(aggregate.equals("avg")) {
-                            hashMap.get(inputKey).add((double) input.getIntegerByField(aggregateColumn));
+                            hashMap.get(inputKey).add(new Double(input.getIntegerByField(aggregateColumn)));
                             countMap.put((int) inputKey, 1);
                             sumMap.put((int) inputKey, input.getIntegerByField(aggregateColumn));
                         }
@@ -105,7 +106,7 @@ public class GroupByAndAggregateBolt extends BaseBasicBolt {
                 }
             }
         } else {
-            System.out.println("Emitting Groupby irrelevent = " + input.toString());
+            // System.out.println("Emitting Groupby irrelevent = " + input.toString());
             collector.emit(input.getValues());
         }
     }

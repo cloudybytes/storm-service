@@ -1,6 +1,7 @@
 package com.example.storm.utils;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import com.example.storm.ParsedSqlQuery;
 
@@ -11,9 +12,14 @@ import org.apache.storm.topology.base.BaseWindowedBolt;
 import org.apache.storm.tuple.Fields;
 
 public class TopologyUtils {
+    public static AtomicLong startTime = new AtomicLong(0);
+    public static AtomicLong endTime = new AtomicLong(0);
+    public static int outputFileNumber = 0;
+
     public static String addJoinerBoltToTopology(TopologyBuilder builder, ParsedSqlQuery parsedSqlQuery) {
         JoinBolt joinBolt;
-        String columns = SpoutUtils.getCommaSperatedFields(parsedSqlQuery.getJoin()[1]) + ", " + SpoutUtils.getCommaSperatedFieldsTruncated(parsedSqlQuery.getJoin()[1], parsedSqlQuery.getJoin()[3]);
+        String columns = SpoutUtils.getCommaSperatedFields(parsedSqlQuery.getJoin()[1]) + "," + SpoutUtils.getCommaSperatedFieldsTruncated(parsedSqlQuery.getJoin()[1], parsedSqlQuery.getJoin()[3]);
+        // System.out.println("Join Columns = " + columns);
         if(parsedSqlQuery.getJoin()[0].equals("inner")) {
             joinBolt = new JoinBolt(SpoutUtils.getSpoutName(parsedSqlQuery.getJoin()[1]), parsedSqlQuery.getJoin()[2])
                 .join(SpoutUtils.getSpoutName(parsedSqlQuery.getJoin()[3]), parsedSqlQuery.getJoin()[4], SpoutUtils.getSpoutName(parsedSqlQuery.getJoin()[1]))
@@ -57,6 +63,7 @@ public class TopologyUtils {
             config.put("having[1]", parsedSqlQuery.getHaving_condition()[1]);
             config.put("having[2]", parsedSqlQuery.getHaving_condition()[2]);
         }
+        System.out.println("Topology Config = " + config.toString());
         return config;
     }
 }

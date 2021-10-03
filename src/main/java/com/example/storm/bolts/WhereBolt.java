@@ -138,7 +138,7 @@ public class WhereBolt extends BaseBasicBolt {
                 }
             }
         } else {
-            // System.out.println("Emitting due to lack of where");
+            // System.out.println("Emitting due to lack of where = " + input.toString());
             collector.emit(input.getValues());
         }    
     }

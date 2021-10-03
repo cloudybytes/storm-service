@@ -42,14 +42,14 @@ public class HavingBolt extends BaseBasicBolt {
         if(this.containsHaving) {
             if(this.having[1].equals(">")) {
                 if(input.contains(this.having[0])) {
-                    if((input.getValueByField(this.having[0]) instanceof Integer)) {
+                    if(!having[0].contains("avg")) {
                         int val = (Integer)input.getValueByField(this.having[0]);
                         int constant = Integer.parseInt(this.having[2]);
                         if(val > constant) {
                             // System.out.println("Emitting = " + input.toString());
                             collector.emit(input.getValues());
                         }
-                    } else if((input.getValueByField(this.having[0]) instanceof Double)) {
+                    } else {
                         double val = (Double) input.getValueByField(this.having[0]);
                         double constant = Double.parseDouble(this.having[2]);
                         if(val > constant) {
@@ -60,16 +60,18 @@ public class HavingBolt extends BaseBasicBolt {
                 }
             } else if(this.having[1].equals(">=")) {
                 if(input.contains(this.having[0])) {
-                    if((input.getValueByField(this.having[0]) instanceof Integer)) {
+                    if(!having[0].contains("avg")) {
                         int val = (Integer)input.getValueByField(this.having[0]);
                         int constant = Integer.parseInt(this.having[2]);
+                        // System.out.println("Integer val = " + val + " constant = " + constant);
                         if(val >= constant) {
                             // System.out.println("Emitting = " + input.toString());
                             collector.emit(input.getValues());
                         }
-                    } else if((input.getValueByField(this.having[0]) instanceof Double)) {
+                    } else  {
                         double val = (Double) input.getValueByField(this.having[0]);
                         double constant = Double.parseDouble(this.having[2]);
+                        // System.out.println("Double val = " + val + " constant = " + constant);
                         if(val >= constant) {
                             // System.out.println("Emitting = " + input.toString());
                             collector.emit(input.getValues());
@@ -78,14 +80,14 @@ public class HavingBolt extends BaseBasicBolt {
                 }
             } else if(this.having[1].equals("<")) {
                 if(input.contains(this.having[0])) {
-                    if((input.getValueByField(this.having[0]) instanceof Integer)) {
+                    if(!having[0].contains("avg")) {
                         int val = (Integer)input.getValueByField(this.having[0]);
                         int constant = Integer.parseInt(this.having[2]);
                         if(val < constant) {
                             // System.out.println("Emitting = " + input.toString());
                             collector.emit(input.getValues());
                         }
-                    } else if((input.getValueByField(this.having[0]) instanceof Double)) {
+                    } else  {
                         double val = (Double) input.getValueByField(this.having[0]);
                         double constant = Double.parseDouble(this.having[2]);
                         if(val < constant) {
@@ -96,14 +98,14 @@ public class HavingBolt extends BaseBasicBolt {
                 }
             } else if(this.having[1].equals("<=")) {
                 if(input.contains(this.having[0])) {
-                    if((input.getValueByField(this.having[0]) instanceof Integer)) {
+                    if(!having[0].contains("avg")) {
                         int val = (Integer)input.getValueByField(this.having[0]);
                         int constant = Integer.parseInt(this.having[2]);
                         if(val <= constant) {
                             // System.out.println("Emitting = " + input.toString());
                             collector.emit(input.getValues());
                         }
-                    } else if((input.getValueByField(this.having[0]) instanceof Double)) {
+                    } else  {
                         double val = (Double) input.getValueByField(this.having[0]);
                         double constant = Double.parseDouble(this.having[2]);
                         if(val <= constant) {
@@ -114,14 +116,14 @@ public class HavingBolt extends BaseBasicBolt {
                 }
             } else if(this.having[1].equals("=")) {
                 if(input.contains(this.having[0])) {
-                    if((input.getValueByField(this.having[0]) instanceof Integer)) {
+                    if(!having[0].contains("avg")) {
                         int val = (Integer)input.getValueByField(this.having[0]);
                         int constant = Integer.parseInt(this.having[2]);
                         if(val == constant) {
                             // System.out.println("Emitting = " + input.toString());
                             collector.emit(input.getValues());
                         }
-                    } else if((input.getValueByField(this.having[0]) instanceof Double)) {
+                    } else  {
                         double val = (Double) input.getValueByField(this.having[0]);
                         double constant = Double.parseDouble(this.having[2]);
                         if(val == constant) {
@@ -132,14 +134,14 @@ public class HavingBolt extends BaseBasicBolt {
                 }
             } else if(this.having[1].equals("<>")) {
                 if(input.contains(this.having[0])) {
-                    if((input.getValueByField(this.having[0]) instanceof Integer)) {
+                    if(!having[0].contains("avg")) {
                         int val = (Integer)input.getValueByField(this.having[0]);
                         int constant = Integer.parseInt(this.having[2]);
                         if(val != constant) {
                             // System.out.println("Emitting = " + input.toString());
                             collector.emit(input.getValues());
                         }
-                    } else if((input.getValueByField(this.having[0]) instanceof Double)) {
+                    } else  {
                         double val = (Double) input.getValueByField(this.having[0]);
                         double constant = Double.parseDouble(this.having[2]);
                         if(val != constant) {

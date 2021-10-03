@@ -50,7 +50,7 @@ public class ServiceController {
         } else {
             columns = SpoutUtils.getCommaSperatedFields(parsedSqlQuery.getFrom_table()).split(",");
         }
-        System.out.println("Join present = " + joinPresent);
+        System.out.println("Join present = " + columns);
         // Add where bolt to topology
         WhereBolt whereBolt = new WhereBolt();
         whereBolt.setOutputFields(columns);
@@ -72,7 +72,8 @@ public class ServiceController {
         // Add GroupByAndAggregate Bolt
         GroupByAndAggregateBolt groupByAndAggregateBolt = new GroupByAndAggregateBolt();
         groupByAndAggregateBolt.setOutputFields(columns);
-        BoltDeclarer declarer = builder.setBolt("GroupByBolt", groupByAndAggregateBolt);
+        BoltDeclarer declarer = builder.setBolt("GroupByBolt", groupByAndAggregateBolt, 1);
+        declarer.allGrouping("WhereBolt");
         if(parsedSqlQuery.getGroup_by_column() != null) {
             System.out.println("Adding Fields grouping");
             declarer.fieldsGrouping("WhereBolt", new Fields(parsedSqlQuery.getGroup_by_column()));
@@ -96,16 +97,16 @@ public class ServiceController {
         builder.setBolt("TestBolt", outputHandlerBolt).shuffleGrouping("SelectBolt");
         LocalCluster cluster = new LocalCluster();
         try {
+            TopologyUtils.startTime.set(System.currentTimeMillis());
             cluster.submitTopology("Topo", config, builder.createTopology());
+            Thread.sleep(25000);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        Thread.sleep(50000);
         Map<String, Object> response = new HashMap<String, Object>();
-        response.put("time", "30");
+        response.put("time", TopologyUtils.endTime.get() - TopologyUtils.startTime.get() + " miliseconds");
         System.out.println("Size of map = " + outputMap.size());
-        response.put("result", "http://127.0.0.1:8081/output.txt");
+        response.put("result", "/output" + TopologyUtils.outputFileNumber + ".csv");
         return response;
     }
-    
 }
