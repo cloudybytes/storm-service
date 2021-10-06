@@ -29,5 +29,8 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+/src/main/resources/static/*.csv
+/src/main/resources/static/*.txt
+
 ### VS Code ###
 .vscode/

@@ -14,7 +14,7 @@ import org.apache.storm.tuple.Fields;
 public class TopologyUtils {
     public static AtomicLong startTime = new AtomicLong(0);
     public static AtomicLong endTime = new AtomicLong(0);
-    public static int outputFileNumber = 0;
+    public static String fileName = "";
 
     public static String addJoinerBoltToTopology(TopologyBuilder builder, ParsedSqlQuery parsedSqlQuery) {
         JoinBolt joinBolt;

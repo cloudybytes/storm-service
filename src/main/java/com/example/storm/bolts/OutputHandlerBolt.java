@@ -2,8 +2,10 @@ package com.example.storm.bolts;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -30,7 +32,18 @@ public class OutputHandlerBolt extends BaseBasicBolt {
         public void run() {
             System.out.println("Size of hashMap = " + hashMap.size());
             try {
-                File myFile = new File("./src/main/resources/static/output" + TopologyUtils.outputFileNumber +".csv");
+                int leftLimit = 48; // numeral '0'
+                int rightLimit = 122; // letter 'z'
+                int targetStringLength = 10;
+                Random random = new Random();
+
+                String generatedString = random.ints(leftLimit, rightLimit + 1)
+                    .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+                    .limit(targetStringLength)
+                    .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                    .toString();
+                TopologyUtils.fileName = generatedString;
+                File myFile = new File("./src/main/resources/static/" + TopologyUtils.fileName + ".csv");
                 FileWriter fileWriter = new FileWriter(myFile);
                 for(Object key: hashMap.keySet()) {
                     String value = hashMap.get(key).getValues().toString();

@@ -23,12 +23,19 @@ import org.apache.storm.topology.BoltDeclarer;
 import org.apache.storm.topology.TopologyBuilder;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Tuple;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@RestController 
 public class ServiceController {
+    @GetMapping("/hello")
+    public String hello() {
+        System.out.println("Request Logged");
+        return "Hello. Reached Storm server";
+    }
+
     @PostMapping(value = "/execute", consumes = "application/json")
     public Map<String, Object> execute(@RequestBody ParsedSqlQuery parsedSqlQuery) throws Exception {
         Boolean joinPresent = false;
@@ -99,14 +106,14 @@ public class ServiceController {
         try {
             TopologyUtils.startTime.set(System.currentTimeMillis());
             cluster.submitTopology("Topo", config, builder.createTopology());
-            Thread.sleep(25000);
+            Thread.sleep(35000);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
         Map<String, Object> response = new HashMap<String, Object>();
         response.put("time", TopologyUtils.endTime.get() - TopologyUtils.startTime.get() + " miliseconds");
         System.out.println("Size of map = " + outputMap.size());
-        response.put("result", "/output" + TopologyUtils.outputFileNumber + ".csv");
+        response.put("output_url", "/" + TopologyUtils.fileName + ".csv");
         return response;
     }
 }
